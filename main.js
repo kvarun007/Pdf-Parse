@@ -1,4 +1,5 @@
 const pdfParse = require('./pdfParse'); // Correctly import the module
+const fs = require('fs');
 
 const filePath_1 = process.argv[2];
 const filePath_2 = process.argv[3];
@@ -28,6 +29,11 @@ const processFiles = async () => {
 
     console.log('Purchases:',purchases);
     console.log('Payments:', payments);
+
+    purchases[0].push("ref number");
+    purchases[0].push("status");
+    purchases[0].push("payemnt dates");
+
 
     let rn = payments[1][1];
     let currBal = Number(payments[1][2]) ;
@@ -110,6 +116,33 @@ const processFiles = async () => {
         // console.log("temp - " + temp)
     }
     console.log('Updated Purchases:', purchases)
+
+    const convertToCsv = (data) => {
+        // Create the CSV header
+        // const header = ['Column 1', 'Column 2', 'Column 3', 'Column 4', 'Column 5', 'Column 6', 'Column 7'];
+        const csvRows = [];
+    
+        // Convert each row of data to CSV format
+        data.forEach(row => {
+            csvRows.push(row.map(field => `"${field}"`).join(','));
+        });
+    
+        return csvRows.join('\n');
+    };
+    
+    // Function to write CSV string to file
+    const writeToCsv = (csvString, filePath) => {
+        fs.writeFile(filePath, csvString, (err) => {
+            if (err) {
+                console.error('Error writing CSV file:', err);
+            } else {
+                console.log(`CSV file was written successfully to ${filePath}`);
+            }
+        });
+    };
+
+    const csvString = convertToCsv(purchases);
+    writeToCsv(csvString, "./Excel/updated_purchases.csv");
 };
 
 // Execute the processing function
