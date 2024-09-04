@@ -33,20 +33,25 @@ const processFiles = async () => {
     let currBal = Number(payments[1][2]) ;
     let paymentDate = payments[1][0];
     let temp = 2;
+    let loop = 1
 
     for(let i=1; i<purchases.length; i++){
-        console.log(i)
+        // console.log(i)
         console.log( "present invoice - " + purchases[i][2]);
         console.log(typeof(purchases[i][2]))
         if(Number(purchases[i][2]) == currBal){
             purchases[i].push(rn);
             purchases[i].push("settled");
             purchases[i].push(paymentDate);
-
-            rn = payments[temp][1];
-            currBal = Number(payments[temp][2]) ;
-            paymentDate = payments[temp][0] ;
-            temp++
+            if(temp < payments.length){
+                rn = payments[temp][1];
+                currBal = Number(payments[temp][2]) ;
+                paymentDate = payments[temp][0] ;
+                temp++
+            }else{
+                break;
+            }
+            
         }
         else if(Number(purchases[i][2]) < currBal){
             console.log("<")
@@ -55,6 +60,30 @@ const processFiles = async () => {
             purchases[i].push(paymentDate);
 
             currBal = currBal - Number(purchases[i][2])
+            
+            if(rn.split("/").length > 1){
+                let spendAmount = Number(purchases[i][2]);
+                let indexToRemove = 0
+                console.log( "dfsssssssssssssdfdddddddddddddd"+rn.split("/").length)
+                while(spendAmount >0 && loop < payments.length){
+                    // console.log("looppppp is runinning" )
+                    console.log(`spendAmount: ${spendAmount}, loop: ${loop}, indexToRemove: ${indexToRemove}`);
+                    spendAmount = spendAmount - Number(payments[loop][2]);
+                    indexToRemove ++
+                    loop++
+                }
+                loop--
+                rn = rn.split("/").splice(1,indexToRemove-1).join("/");
+                paymentDate = paymentDate.split("/").splice(1,indexToRemove-1).join("/")
+            }
+            
+            
+            // console.log("AMOUNT -" + spendAmount+","+ "index -" + indexToRemove+"," +"loop -"+ loop)
+            // console.log(rn.split("/"))
+            // console.log(rn.split("/").splice(0,indexToRemove-1).join("/"))
+            
+            // console.log(rn)
+            
         }
         else{
             // console.log(temp)
@@ -65,17 +94,20 @@ const processFiles = async () => {
                 temp++;
                 i--;
             }else{
-                console.log("loop breaked")
-                break;
+                purchases[i].push("no ref num")
+                purchases[i].push("not settled")
+                purchases[i].push("no date")
+                // console.log("loop breaked")
+                // break;
             }
             
         }
         // console.log(i)
-        console.log("ren - " + rn);
-        console.log("currBal - " +currBal);
-        console.log("currBal - " +typeof(currBal));
-        console.log("paymentDate - " +paymentDate);
-        console.log("temp - " + temp)
+        // console.log("ren - " + rn);
+        // console.log("currBal - " +currBal);
+        // console.log("currBal - " +typeof(currBal));
+        // console.log("paymentDate - " +paymentDate);
+        // console.log("temp - " + temp)
     }
     console.log('Updated Purchases:', purchases)
 };
