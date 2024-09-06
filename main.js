@@ -1,13 +1,13 @@
-const pdfParse = require('./pdfParse'); // Correctly import the module
+const pdfParse = require('./pdfParse'); 
 const fs = require('fs');
 
 const filePath_1 = process.argv[2];
 const filePath_2 = process.argv[3];
 
-// Validate both file paths
+
 if (!filePath_1 || !filePath_2) {
     console.error('Both file paths must be provided');
-    process.exit(1); // Exit if not enough arguments are provided
+    process.exit(1);
 }
 
 // Function to parse and log data for a file
@@ -37,6 +37,7 @@ const processFiles = async () => {
 
     let rn = payments[1][1];
     let currBal = Number(payments[1][2]) ;
+    console.log("numberrrrrrrrrrrrrrrrrrrrrrrr"+Number(payments[1][2]))
     let paymentDate = payments[1][0];
     let temp = 2;
     let loop = 1
@@ -79,8 +80,11 @@ const processFiles = async () => {
                     loop++
                 }
                 loop--
-                rn = rn.split("/").splice(1,indexToRemove-1).join("/");
-                paymentDate = paymentDate.split("/").splice(1,indexToRemove-1).join("/")
+                console.log(rn.split("/"))
+                console.log(rn.split("/").splice(indexToRemove-1))
+                console.log(rn.split("/").splice(indexToRemove-1).join("/"))
+                rn = rn.split("/").splice(indexToRemove-1).join("/");
+                // paymentDate = paymentDate.split("/").splice(indexToRemove-1).join("/")
             }
             
             
@@ -96,7 +100,7 @@ const processFiles = async () => {
             if(temp < payments.length){
                 rn = rn + "/" + payments[temp][1] ;
                 currBal = currBal + Number(payments[temp][2]) ;
-                paymentDate = paymentDate + "/" + payments[temp][0];
+                paymentDate = payments[temp][0];
                 temp++;
                 i--;
             }else{
@@ -118,11 +122,7 @@ const processFiles = async () => {
     console.log('Updated Purchases:', purchases)
 
     const convertToCsv = (data) => {
-        // Create the CSV header
-        // const header = ['Column 1', 'Column 2', 'Column 3', 'Column 4', 'Column 5', 'Column 6', 'Column 7'];
         const csvRows = [];
-    
-        // Convert each row of data to CSV format
         data.forEach(row => {
             csvRows.push(row.map(field => `"${field}"`).join(','));
         });
@@ -130,7 +130,7 @@ const processFiles = async () => {
         return csvRows.join('\n');
     };
     
-    // Function to write CSV string to file
+
     const writeToCsv = (csvString, filePath) => {
         fs.writeFile(filePath, csvString, (err) => {
             if (err) {
@@ -142,8 +142,8 @@ const processFiles = async () => {
     };
 
     const csvString = convertToCsv(purchases);
-    writeToCsv(csvString, "./Excel/updated_purchases.csv");
+    writeToCsv(csvString, "./Excel/updated_purchases_1.csv");
 };
 
-// Execute the processing function
+
 processFiles();
